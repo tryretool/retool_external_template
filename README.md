@@ -17,8 +17,7 @@ Retool Embed doesn't change much in how you build in Retool. You still use resou
 
 You can learn more about [how Retool Embed works here.](https://docs.retool.com/docs/retool-embed#how-retool-embed-works)
 
-## Requirements
-## Requirements
+## 💻 Requirements
 
 This template requires Node.js version 16.14.2 or higher. Please make sure that you have Node.js installed before running the application. You can download Node.js from the official website: https://nodejs.org/
 
@@ -30,7 +29,7 @@ $ `nvm use 16.14.2`
 
 $ `node -v`
 
-## Getting Started
+## 🚀 Getting Started
 
 1. Clone repo
 2. Setup the Frontend
@@ -43,10 +42,10 @@ $ `node -v`
 5. Run `./start`
 6. Open `http:\\localhost:3001` in browser
 
-## More Configuration
+## 🔧 Configuration
 Most of the configuration is inside the `frontend/config.js`, including names of Retool Apps to embed, Auth0 credentials, Sidebar links, Formatting preferences (colors, fonts). 
 
-## Repo structure
+## 🗂️ Repo structure
 Mono-repo. Single project, but each of frontend and backend can be run separately.
 
 ### Frontend is a React app served from `/frontend/app.js`.
@@ -82,3 +81,7 @@ Mono-repo. Single project, but each of frontend and backend can be run separatel
     ├── server.js               // entry point for the server. Specifies the router files to use (index.js, retool.js)
     ├── package.json           // file for managing dependencies
 ```
+
+## 👩‍💻 Contributing
+
+To contribute, open a Github Issue on this repo, and let us know what you are thinking of contributing! We encourage you to reach out before you get started building to get early feedback.
