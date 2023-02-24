@@ -17,6 +17,19 @@ Retool Embed doesn't change much in how you build in Retool. You still use resou
 
 You can learn more about [how Retool Embed works here.](https://docs.retool.com/docs/retool-embed#how-retool-embed-works)
 
+## Requirements
+## Requirements
+
+This template requires Node.js version 16.14.2 or higher. Please make sure that you have Node.js installed before running the application. You can download Node.js from the official website: https://nodejs.org/
+
+If you have a different version of Node.js installed on your machine, you can use a version manager like [NVM](https://github.com/nvm-sh/nvm#installing-and-updating) to switch between different versions. 
+
+$ `nvm install 16.14.2`
+
+$ `nvm use 16.14.2`
+
+$ `node -v`
+
 ## Getting Started
 
 1. Clone repo
