@@ -1,0 +1,53 @@
+h3 {
+    margin: 5px;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+p {
+    margin: 20px 0;
+    font-size: 16px;
+}
+
+.bg {
+    background: url("https://images.pexels.com/photos/891393/pexels-photo-891393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+    position: absolute;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    font-family: 'Roboto' !important;
+}
+
+.login-container {
+    margin: 0 auto; 
+    padding: 40; 
+    display: flex;
+    flex-flow: column; 
+    justify-content: center;
+    align-items: center; 
+    text-align: center;
+    width: 300px; 
+    background: #ffffff;
+    border-radius: 4px; 
+}
+
+.login {
+    color: #ffffff !important;
+    background: #080928 !important;
+    text-transform: none;
+    transition: opacity .2s ease-in-out !important;
+    -moz-transition: opacity  .2s ease-in-out !important;
+    -webkit-transition: opacity .2s ease-in-out !important;
+    -o-transition: opacity .2s ease-in-out !important;
+}
+
+.login:hover {
+    color: #ffffff !important;
+    background: #080928 !important;
+    opacity: .7 !important;
+}

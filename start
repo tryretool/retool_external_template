@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# This script starts the development server and ensures that all child processes are terminated when the script exits
+
+# Use the 'trap' command to catch signals and execute a command when they occur
+# The command 'kill $(jobs -p)' sends a termination signal to all the child processes running in the background. The 'EXIT' signal specifies that the command should be executed when the script exits
+trap 'kill $(jobs -p)' EXIT
+
+# Start the local development server listening for incoming requests on port 3000
+yarn dev
