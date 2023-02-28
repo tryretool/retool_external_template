@@ -2,8 +2,6 @@
 
 A React app that can be used as a template for embedding Retool Apps. It uses [Auth0 React SDK](https://auth0.github.io/auth0-react/) to add authentication, and [react-retool](https://www.npmjs.com/package/react-retool) wrapper for embedding the Retool apps. 
 
-![Demo gif](docs/demo.gif)
-
 ## What is Retool Embed?
 Retool Embed is a way to let external users––partners, vendors, customers––securely access embedded Retool apps within your product. You can use any authentication solution to give users access, and then control app behavior, data access, and audit usage on a per-user basis. You can learn more about Retool Embed [here](https://docs.retool.com/docs/embed-retool-apps).
 
