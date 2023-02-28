@@ -35,7 +35,7 @@ $ `node -v`
     - Update `frontend/config.js` with your Auth0 credentials (Domain and ClientID). See [this guide](https://auth0.com/docs/quickstart/spa/react#configure-auth0).
 3. Setup the Backend
     - Run `cp backend/.env.example backend/.env` 
-    - Update `backend/.env` file to configure your RETOOL_API_KEY, RETOOL_URL, and BACKEND_PORT.
+    - Update `backend/.env` file to configure your RETOOL_API_KEY and RETOOL_URL.
 4. Run `yarn install`
 5. Run `./start`
 6. Open `http:\\localhost:3001` in browser
