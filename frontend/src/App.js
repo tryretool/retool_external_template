@@ -9,7 +9,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 
 import SplashPage from "./pages/SplashPage";
-import { homepage, auth, formattingPreferences} from "../config";
+import { homepage, auth, darkModeFormatting} from "../config";
 import QuickLogin from "./pages/QuickLogin";
 
 
@@ -29,9 +29,19 @@ const App = () => {
   const [seed, setSeed] = useState(1);
   const [font, setFont] = useState('Retool Default')
   const location = useLocation();
+  const [darkMode, setDarkModeToggle] = useState(false);
+  const [darkModeTopbar, setDarkModeTopbarToggle] = useState(false);
+  const handleDarkModeToggle = () => {
+    setDarkModeToggle(!darkMode);
+    setTimeout(() => {setDarkModeTopbarToggle(!darkModeTopbar)},133);
+  }
+  const formatting = darkModeTopbar ? darkModeFormatting.darkModePalette : darkModeFormatting.lightModePalette;
+
 
   useEffect(() => {
     // Run the callback function when the route changes
+    setDarkModeToggle(false);
+    setDarkModeTopbarToggle(false)
     setFont('Retool Default');
   }, [location.pathname]);
 
@@ -131,7 +141,7 @@ const App = () => {
   }
 
   return (
-    <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formattingPreferences.backgroundColor }}>
+    <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formatting.backgroundColor }}>
       <Routes>
         <Route path="/login" element={<SplashPage />} />
         <Route
@@ -147,7 +157,9 @@ const App = () => {
               handleShowBorder={() => setShowBorder(!showBorder)}
               handleSetFont={setFont}
               activeFont={font}
-              formatting={formattingPreferences}
+              formatting={formatting}
+              darkModeTopbar={darkModeTopbar}
+              handleDarkModeToggle={handleDarkModeToggle}
             />
           }
         >
@@ -163,6 +175,7 @@ const App = () => {
                   key={seed}
                   userProfile={userProfile}
                   activeFont={font}
+                  darkMode={darkMode}
                 />
               }
             />

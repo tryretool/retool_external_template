@@ -17,9 +17,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
+})(({ theme, open, darkModeTopbar }) => ({
   boxShadow: "none",
-  borderBottom: "2px solid #eeeeee",
+  borderBottom: darkModeTopbar ?  "2px solid #181929" : "2px solid #eeeeee",
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -36,13 +36,15 @@ export const Topbar = ({
   user = {},
   onToggleDrawer,
   age,
+  darkMode,
+  darkModeTopbar,
   formatting,
   ...props
 }) => {
   
   
   return (
-    <AppBar position="fixed" open={drawerIsOpen} >
+    <AppBar position="fixed" open={drawerIsOpen} darkModeTopbar={darkModeTopbar}>
       <Toolbar
         sx={{
           pr: "24px",
@@ -57,7 +59,7 @@ export const Topbar = ({
           onClick={onToggleDrawer}
           sx={{
             marginRight: "36px",
-            color: '#080928' , 
+            color: darkMode ? 'white' : '#080928' , 
             ...(drawerIsOpen && { display: "none" }),
           }}
         >
@@ -70,8 +72,7 @@ export const Topbar = ({
               fontSize: 24,
               letterSpacing: ".25px",
               marginLeft: "15px",
-              border: '0px',
-              color:'#000'
+              border: '0px'
             }}
           >
             Shopco Merchant
@@ -83,8 +84,7 @@ export const Topbar = ({
             marginRight: "20px",
             fontSize: "16px",
             letterSpacing: ".25px",
-            fontWeight: 500,
-            color:'#000'
+            fontWeight: 500
           }}
         >
           {user.name}
