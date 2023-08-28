@@ -13,6 +13,8 @@ Retool Embed doesn't change much in how you build in Retool. You still use resou
 3. Retool generates a secure embed link
 4. Your portal loads the embedded Retool apps
 
+![Embed authentication flow](https://d3399nw8s4ngfo.cloudfront.net/docs/856194b2-a71a-4da6-a5a4-b3fd6225d835.png)
+
 You can learn more about [how Retool Embed works here.](https://docs.retool.com/docs/retool-embed#how-retool-embed-works)
 
 ## 💻 Requirements
