@@ -11,7 +11,7 @@ p {
 }
 
 .bg {
-    background: url("https://images.pexels.com/photos/891393/pexels-photo-891393.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+    background: #F9644B;
     position: absolute;
     background-size: cover;
     height: 100%;

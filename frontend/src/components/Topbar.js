@@ -74,7 +74,7 @@ export const Topbar = ({
               color:'#000'
             }}
           >
-            Shopco Merchant
+            By Miles Tools
           </div>
         </Box>
         <Box sx={{ flexGrow: 1 }} />

@@ -86,6 +86,7 @@ const App = () => {
           },
         });
         const { app_metadata, user_metadata } = await metadataResponse.json();
+        debugger;
         setUserProfile({
           app: app_metadata,
           user: user_metadata,
@@ -129,7 +130,7 @@ const App = () => {
       </Routes>
     );
   }
-
+console.log(sidebarList);
   return (
     <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formattingPreferences.backgroundColor }}>
       <Routes>
