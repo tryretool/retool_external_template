@@ -1,5 +1,5 @@
 const retoolAppMap = {
-   claimsPortal: "a950d07e-84d3-11ee-a4c4-7ba1c5210469"
+   claimsPortal: "8c269c02-913c-11ee-9769-4f5603776ba9"
 };
 
 module.exports = retoolAppMap
