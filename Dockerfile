@@ -1,8 +1,10 @@
-FROM node:21.1.0-alpine3.17
+FROM node:16.14.2-alpine
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install
 COPY . .
-EXPOSE 3002
-CMD [ "./start"]
+RUN cd backend && npm i
+RUN cd frontend && npm i
+EXPOSE 3001
+CMD [ "yarn", "start"]

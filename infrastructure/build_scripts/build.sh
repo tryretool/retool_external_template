@@ -5,7 +5,7 @@ export LATEST_TAG="latest"
 echo IMAGE_TAG="$IMAGE_TAG"
 echo LATEST_TAG="$LATEST_TAG"
 
-npm i
+yarn
 
 if [[ $BUILD = "true" ]]; then
     echo Building Docker container
