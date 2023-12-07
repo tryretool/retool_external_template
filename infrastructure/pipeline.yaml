@@ -111,7 +111,7 @@ Resources:
               Configuration:
                 Repo: bymiles-dlg-claims-portal
                 Owner: by-miles
-                Branch: chore/pipeline
+                Branch: main
                 OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAUTH_TOKEN}}'
                 PollForSourceChanges: false
               OutputArtifacts:
