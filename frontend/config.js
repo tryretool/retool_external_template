@@ -3,11 +3,11 @@ exports.deployOnLocalhost = false;
 exports.homepage = {
   sidebarList: [
     {
-      title: "Claims Portal",
+      title: "By Miles Claims Portal",
       retoolAppName: "claimsPortal",
       icon: "home",
       slug: "",
-      groups: ["bronze"],
+      groups: ["admin", "ByMilesClaimsPortal_Viewer"],
     },
   ],
 };

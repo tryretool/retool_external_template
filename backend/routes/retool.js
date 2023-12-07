@@ -15,9 +15,10 @@ var retoolAppMap = require('../utils/retoolAppsToUuids')
 router.post('/embedUrl', (req, res) => {
   // Parse the JWT access token.
   const parsedToken = JSON.parse(atob(req.body.accessToken.split('.')[1]))
+  console.log("azp", req.body.accessToken);
 
-  // Get the user group from the request.
   const group = req.body.userProfile.user.group
+  const email = req.body.userProfile.user.user
 
   // Set the API request options for the Retool API.
   const options = {
@@ -28,19 +29,25 @@ router.post('/embedUrl', (req, res) => {
     },
     body: JSON.stringify({
       "landingPageUuid": retoolAppMap[req.body.retoolAppName],
-      "externalIdentifier": parsedToken.azp,
-      "groupIds": [5],
+      "externalIdentifier": email,
+      "groupIds": [5,1],
       "metadata": {
         "group": group,
         "mode" : 'dark'
+      },
+      "userInfo": {
+        "email": email
       }
     })
   }
-
+  console.log("options", options);
+  const url = `https://${process.env.RETOOL_URL}/api/embed-url/external-user`;
+  console.log("url", url);
   // Send a request to the Retool API to retrieve the embedded URL.
-  fetch(`https://${process.env.RETOOL_URL}/api/embed-url/external-user`, options)
+  fetch(url, options)
   .then(data => data.json())
   .then(json => res.send(json))
+  .then(() => console.log("Retool embed URL retrieved successfully.", json.embedUrl ))
   .catch(e => console.log(e.message))
 })
 
