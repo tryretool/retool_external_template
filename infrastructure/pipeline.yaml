@@ -70,6 +70,9 @@ Resources:
           - Name: S3Prefix
             Value: !Sub "bymiles-${Service}"
             Type: PLAINTEXT
+          - Name: REPOSITORY_URI
+            Value: 608560900974.dkr.ecr.eu-west-2.amazonaws.com/teltonika-decoder
+            Type: PLAINTEXT
           - Name: KMSKey
             Value: 6077ca1f-47f1-4ed6-8e03-a59e9c9209bd
             Type: PLAINTEXT

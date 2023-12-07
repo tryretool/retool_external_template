@@ -9,5 +9,4 @@ export LATEST_TAG="latest"
 echo IMAGE_TAG="$IMAGE_TAG"
 echo LATEST_TAG="$LATEST_TAG"
 aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin 608560900974.dkr.ecr.eu-west-2.amazonaws.com
-export REPOSITORY_URI=608560900974.dkr.ecr.eu-west-2.amazonaws.com/bymiles-claims-portal
 echo Build started on "$(date)"
