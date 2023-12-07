@@ -4,8 +4,8 @@
     {
       "name": "claims-portal",
       "image": "<IMAGE1_NAME>",
-      "cpu": 128,
-      "memory": 256,
+      "cpu": 1024,
+      "memory": 1024,
       "portMappings": [
         {
           "containerPort": 3002,
