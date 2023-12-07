@@ -1,0 +1,30 @@
+---
+version: 0.2
+env:
+  parameter-store:
+    DOCKER_TOKEN: /codepipeline/dockerhubtoken
+    # NPM_TOKEN: /codepipeline/npm_token
+phases:
+  pre_build:
+    commands: [./infrastructure/build_scripts/pre_build.sh]
+  build:
+    commands:
+      - echo Entered the build phase...;
+      - ./infrastructure/build_scripts/build.sh
+  post_build:
+    commands:
+      - echo Entered the post_build phase...;
+      - ./infrastructure/build_scripts/post_build.sh
+cache:
+  paths: [~/.npm, ~/.cache]
+artifacts:
+  files: [appspec.yaml, taskdef_test.json, taskdef_prod.json]
+  discard-paths: true
+  base-directory: infrastructure
+  secondary-artifacts:
+    DefinitionArtifact:
+      files: [appspec.yaml, taskdef_test.json, taskdef_prod.json]
+      discard-paths: true
+      base-directory: infrastructure
+    ImageArtifact:
+      files: [imageDetail.json]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script starts the development server and ensures that all child processes are terminated when the script exits
 
