@@ -29,7 +29,7 @@ router.post('/embedUrl', (req, res) => {
     body: JSON.stringify({
       "landingPageUuid": retoolAppMap[req.body.retoolAppName],
       "externalIdentifier": parsedToken.azp,
-      "groupIds": [9],
+      "groupIds": [5],
       "metadata": {
         "group": group,
         "mode" : 'dark'
@@ -38,7 +38,7 @@ router.post('/embedUrl', (req, res) => {
   }
 
   // Send a request to the Retool API to retrieve the embedded URL.
-  fetch(`http://${process.env.RETOOL_URL}/api/embed-url/external-user`, options)
+  fetch(`https://${process.env.RETOOL_URL}/api/embed-url/external-user`, options)
   .then(data => data.json())
   .then(json => res.send(json))
   .catch(e => console.log(e.message))
