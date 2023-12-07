@@ -14,9 +14,20 @@
         }
       ],
       "essential": true,
-      "environment": [],
+      "environment": [
+        {
+          "name": "RETOOL_URL",
+          "value": "dlg-retool.bymiles.zone"
+        }
+      ],
       "mountPoints": [],
       "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "RETOOL_API_KEY",
+          "valueFrom": "arn:aws:ssm:eu-west-2:026732480320:parameter/external/retool"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
