@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Routes, Route, Outlet, useLocation } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import RetoolWrapper from "./components/RetoolWrapper";
@@ -9,59 +8,79 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 
 import SplashPage from "./pages/SplashPage";
-import { homepage, auth, formattingPreferences} from "../config";
+import { homepage, formattingPreferences} from "../config";
 import QuickLogin from "./pages/QuickLogin";
 
 
 const App = () => {
-  const { 
-    isLoading, 
-    isAuthenticated, 
-    user, 
-    getAccessTokenSilently, 
-  } = useAuth0();
-
-  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [userProfile, setUserProfile] = useState({
+    user: {
+      user: 'lloyd+retoolviewer@bymiles.co.uk',
+      group: 'admin',
+    },
+  });
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   const [sidebarList, setSidebarList] = useState([]);
   const [showBorder, setShowBorder] = useState(false);
-  const [seed, setSeed] = useState(1);
   const [font, setFont] = useState('Retool Default')
-  const location = useLocation();
+  const location = useLocation();  
+
 
   useEffect(() => {
-    // Run the callback function when the route changes
+    const authenticateUser = async () => {
+      // TODO: Check if the user has a valid session or JWT token
+      // If authenticated, set isAuthenticated to true, fetch user data, and get an access token
+
+      try {
+        // Simulating a successful authentication
+        setIsAuthenticated(true);
+
+        // Simulating user data retrieval
+        const user = { user: 'lloyd+retoolviewer@bymiles.co.uk', group: 'admin' };
+        setUser(user);
+        
+        // Simulating getting an access token
+        const token = await fetchAccessToken(); 
+        setAccessToken(token);
+
+      } catch (error) {
+        console.error("Authentication failed:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+
+
+    };
+    authenticateUser();
+  }, []);
+
+  const fetchAccessToken = async () => {
+    // TODO: Add implementation to validate Cloudflare JWT token and get an access token
+    // https://developers.cloudflare.com/cloudflare-one/identity/authorization-cookie/validating-json/#javascript-example
+    
+    //const response = await fetch("your_access_token_endpoint");
+    //const data = await response.json();
+    //return data.access_token;
+
+    // Simulating returning a JWT
+    return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MDA2MDYwMzIsImV4cCI6MTczMjE0MjAzMiwiYXVkIjoibG9jYWxob3N0OjMwMDEiLCJzdWIiOiJsbG95ZCtsb2NhbHJldG9vbEBieW1pbGVzLmNvLnVrIiwiR2l2ZW5OYW1lIjoiTGxveWQiLCJTdXJuYW1lIjoiSG9sbWFuIiwiRW1haWwiOiJsbG95ZCtsb2NhbHJldG9vbEBieW1pbGVzLmNvLnVrIiwiR3JvdXAiOiJBZG1pbiJ9._pd6nylHVRE_4r570Vqznozzc3Pgu31tuuvKIX_kAlI'
+  };
+
+  useEffect(() => {
     setFont('Retool Default');
   }, [location.pathname]);
 
   /**
-   * Updates user metadata on Auth0
-   * @param {string} accessToken - Access Token for Auth0 Management API
-   * @param {Object} update  - Request body; the metadata values to be set
-   */
-  const updateUserMetadata = async (accessToken, update) => {
-    const updateUserDetailsUrl = `https://${auth.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}`;
-    await fetch(updateUserDetailsUrl, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(update),
-    });
-  };
-
-  /**
    * Sets the user's current group, which serves to demonstrate dynamic RBAC-based features
-   * Updates both user metadata on Auth0 & the userProfile state variable
+   * Updates the userProfile state variable
    * @param {string} group - group to set as user's current group
    */
   const handleSwitchGroup = (group) => {
-    updateUserMetadata(accessToken, {
-      user_metadata: { group: group },
-    }).then(setSeed(Math.random()));
-
     setUserProfile({
       ...userProfile,
       ...{
@@ -74,39 +93,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const getUserMetadata = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        setAccessToken(token);
 
-        const userDetailsByIdUrl = `https://${auth.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}`;
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const { app_metadata, user_metadata } = await metadataResponse.json();
-        debugger;
-        setUserProfile({
-          app: app_metadata,
-          user: user_metadata,
-        });
-
-        updateUserMetadata(token, {
-          user_metadata: {
-            latestLogin: Date.now(),
-          },
-        });
-      } catch (e) {
-        console.warn("getUserMetadata failed:", e);
-      }
-    };
-    if (user?.sub) {
-      getUserMetadata();
-    }
-  }, [user?.sub]);
-
-  useEffect(() => {
     let isAdmin = userProfile?.user?.group === "admin";
     if (isAdmin) {
       setSidebarList(homepage.sidebarList);
@@ -130,7 +117,7 @@ const App = () => {
       </Routes>
     );
   }
-console.log(sidebarList);
+
   return (
     <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formattingPreferences.backgroundColor }}>
       <Routes>
@@ -161,7 +148,7 @@ console.log(sidebarList);
                   retoolAppName={item.retoolAppName}
                   accessToken={accessToken}
                   showBorder={showBorder}
-                  key={seed}
+                  key={1}
                   userProfile={userProfile}
                   activeFont={font}
                 />
