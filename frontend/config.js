@@ -1,4 +1,4 @@
-exports.deployOnLocalhost = true;
+exports.deployOnLocalhost = false;
 
 exports.homepage = {
   sidebarList: [

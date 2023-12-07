@@ -7,4 +7,4 @@ COPY . .
 RUN cd backend && npm i
 RUN cd frontend && npm i
 EXPOSE 3001
-CMD [ "yarn", "start"]
+ENTRYPOINT ["./start"]
