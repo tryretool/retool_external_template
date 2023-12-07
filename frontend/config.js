@@ -14,7 +14,7 @@ exports.homepage = {
 exports.theme = {
   palette: {
     primary: {
-      main: "#ffffff",
+      main: "#000000",
       light: "#E06363",
       dark: "#972A2A",
       contrastText: "#ffffff",
@@ -25,7 +25,7 @@ exports.theme = {
   },
 };
 exports.formattingPreferences = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f5f5f5",
   text: "#080928",
   elevation: 1,
 };
