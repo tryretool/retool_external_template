@@ -106,9 +106,9 @@ Resources:
                 Provider: GitHub
                 Version: 1
               Configuration:
-                Repo: bymiles-teltonika-decoder
+                Repo: bymiles-dlg-claims-portal
                 Owner: by-miles
-                Branch: main
+                Branch: chore/pipeline
                 OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAUTH_TOKEN}}'
                 PollForSourceChanges: false
               OutputArtifacts:
