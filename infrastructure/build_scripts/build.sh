@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
-
+export IMAGE_TAG=$(echo "$CODEBUILD_RESOLVED_SOURCE_VERSION" | head -c 7)
+export LATEST_TAG="latest"
+echo IMAGE_TAG="$IMAGE_TAG"
+echo LATEST_TAG="$LATEST_TAG"
 if [[ $BUILD = "true" ]]; then
 	echo Building Docker container
 	docker build \
