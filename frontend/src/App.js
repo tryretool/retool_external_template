@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Routes, Route, Outlet, useLocation } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import RetoolWrapper from "./components/RetoolWrapper";
 
@@ -166,7 +165,6 @@ const LayoutWrapper = ({ toggleDrawer, ...rest }) => (
   <>
     <CssBaseline />
     <Topbar onToggleDrawer={toggleDrawer} {...rest} />
-    <Sidebar onClick={toggleDrawer} {...rest} />
     <Outlet />
   </>
 );
