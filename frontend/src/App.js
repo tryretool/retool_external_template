@@ -8,7 +8,6 @@ import { Box } from "@mui/material";
 
 import SplashPage from "./pages/SplashPage";
 import { homepage, formattingPreferences} from "../config";
-import QuickLogin from "./pages/QuickLogin";
 
 
 const App = () => {
@@ -111,7 +110,6 @@ const App = () => {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path="/quicklogin" element={<QuickLogin />} />
         <Route path="*" element={<SplashPage />} />
       </Routes>
     );
