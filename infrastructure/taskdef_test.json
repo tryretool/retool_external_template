@@ -8,8 +8,8 @@
       "memory": 256,
       "portMappings": [
         {
-          "containerPort": 3000,
-          "hostPort": 3000,
+          "containerPort": 3002,
+          "hostPort": 3002,
           "protocol": "tcp"
         }
       ],
