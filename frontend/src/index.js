@@ -13,11 +13,9 @@ const theme = createTheme(fromConfigTheme);
 
 ReactDOM.render(
   <BrowserRouter>
-    <Auth0ProviderWithHistory>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </Auth0ProviderWithHistory>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </BrowserRouter>,
   document.getElementById("app"),
 );
