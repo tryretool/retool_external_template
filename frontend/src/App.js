@@ -8,7 +8,7 @@ import { Box } from "@mui/material";
 
 import SplashPage from "./pages/SplashPage";
 import { homepage, formattingPreferences} from "../config";
-
+import jwt from 'jsonwebtoken'; 
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,48 +26,72 @@ const App = () => {
   const [showBorder, setShowBorder] = useState(false);
   const [font, setFont] = useState('Retool Default')
   const location = useLocation();  
+  const AUD = process.env.POLICY_AUD;
+  const TEAM_DOMAIN = process.env.TEAM_DOMAIN;
+  const CERTS_URL = `${TEAM_DOMAIN}/cdn-cgi/access/certs`;
 
-
-  useEffect(() => {
-    const authenticateUser = async () => {
-      // TODO: Check if the user has a valid session or JWT token
-      // If authenticated, set isAuthenticated to true, fetch user data, and get an access token
-
-      try {
-        // Simulating a successful authentication
-        setIsAuthenticated(true);
-
-        // Simulating user data retrieval
-        const user = { user: 'lloyd+retoolviewer@bymiles.co.uk', group: 'admin' };
-        setUser(user);
-        
-        // Simulating getting an access token
-        const token = await fetchAccessToken(); 
-        setAccessToken(token);
-
-      } catch (error) {
-        console.error("Authentication failed:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
+    useEffect(() => {
+      const authenticateUser = async () => {
+        try {
+          const token = getCookie('CF_Authorization');
+  
+          if (!token) {
+            console.error('Missing required CF Authorization token');
+            return;
+          }
+  
+          const decodedUser = await verifyToken(token);
+          console.log('Decoded User:', decodedUser);
+  
+        } catch (error) {
+          console.error('Authentication failed:', error);
+        }
+      };
+  
+      authenticateUser();
+    }, []);
+  
+    const getCookie = (name) => {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.trim().split('=');
+        if (cookieName === name) {
+          return cookieValue;
+        }
       }
-
-
+      return null;
     };
-    authenticateUser();
-  }, []);
+  
+    const verifyToken = async (token) => {
+      const decodedUser = await verifyTokenWithCloudflare(token);
+      return decodedUser;
+    };
+  
+    const verifyTokenWithCloudflare = async (token) => {
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, getKey, { audience: AUD }, (err, decoded) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(decoded);
+          }
+        });
+      });
+    };
+  
+    const getKey = (header, callback) => {
+      const client = jwksClient({
+        jwksUri: CERTS_URL
+      });
 
-  const fetchAccessToken = async () => {
-    // TODO: Add implementation to validate Cloudflare JWT token and get an access token
-    // https://developers.cloudflare.com/cloudflare-one/identity/authorization-cookie/validating-json/#javascript-example
-    
-    //const response = await fetch("your_access_token_endpoint");
-    //const data = await response.json();
-    //return data.access_token;
-
-    // Simulating returning a JWT
-    return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MDA2MDYwMzIsImV4cCI6MTczMjE0MjAzMiwiYXVkIjoibG9jYWxob3N0OjMwMDEiLCJzdWIiOiJsbG95ZCtsb2NhbHJldG9vbEBieW1pbGVzLmNvLnVrIiwiR2l2ZW5OYW1lIjoiTGxveWQiLCJTdXJuYW1lIjoiSG9sbWFuIiwiRW1haWwiOiJsbG95ZCtsb2NhbHJldG9vbEBieW1pbGVzLmNvLnVrIiwiR3JvdXAiOiJBZG1pbiJ9._pd6nylHVRE_4r570Vqznozzc3Pgu31tuuvKIX_kAlI'
-  };
+      client.getSigningKey(header.kid, function (err, key) {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, key.getPublicKey());
+        }
+      });
+    };
 
   useEffect(() => {
     setFont('Retool Default');
@@ -157,6 +181,8 @@ const App = () => {
       </Routes>
     </Box>
   );
+
+
 };
 
 const LayoutWrapper = ({ toggleDrawer, ...rest }) => (
