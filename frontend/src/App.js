@@ -46,6 +46,9 @@ const App = () => {
               group: group,
             },
           });
+
+          setAccessToken(token);
+          setIsAuthenticated(true);
   
         } catch (error) {
           console.error('Authentication failed:', error);
