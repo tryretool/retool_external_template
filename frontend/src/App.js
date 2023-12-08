@@ -15,12 +15,7 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  const [userProfile, setUserProfile] = useState({
-    user: {
-      user: 'lloyd+retoolviewer@bymiles.co.uk',
-      group: 'admin',
-    },
-  });
+  const [userProfile, setUserProfile] = useState({});
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   const [sidebarList, setSidebarList] = useState([]);
   const [showBorder, setShowBorder] = useState(false);
@@ -42,9 +37,20 @@ const App = () => {
   
           const decodedUser = await verifyToken(token);
           console.log('Decoded User:', decodedUser);
+
+          const { user, group } = decodedUser;
+
+          setUserProfile({
+            user: {
+              user: user,
+              group: group,
+            },
+          });
   
         } catch (error) {
           console.error('Authentication failed:', error);
+        } finally {
+          setIsLoading(false);
         }
       };
   
