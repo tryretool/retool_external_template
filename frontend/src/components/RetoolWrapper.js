@@ -14,21 +14,21 @@ const RetoolWrapper = ({
   const [retoolEmbedUrl, setRetoolEmbedUrl] = useState('')
 
   useEffect(() => {
-    // make a POST request to the backend to get the embed URL
+    // make a POST request to the backend to get the Retool embed URL
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ retoolAppName, accessToken, userProfile })
     };
     fetch('/api/embedUrl', options)
-    .then(res => res.json())
-    .then(data => { setRetoolEmbedUrl(data.embedUrl)})
-  }, [retoolAppName])
-  
+        .then(res => res.json())
+        .then(data => { setRetoolEmbedUrl(data.embedUrl) });
+    }, [retoolAppName])
+
   // if embed URL is available, return the Container and Retool components
   return retoolEmbedUrl && (
     <Container maxWidth={false} disableGutters style={{ marginTop: 66, border:  showBorder ? '5px dashed #FFD4D2' : 'none', boxShadow: "none"}}>
-        <Retool url={retoolEmbedUrl} data={{darkMode, font: activeFont}} />
+        <Retool url={`https://${retoolEmbedUrl}`} data={{darkMode, font: activeFont}} />
     </Container>
   )
 }

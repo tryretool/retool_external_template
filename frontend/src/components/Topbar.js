@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import {
@@ -26,8 +25,8 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.shortest,
   }),
   ...(open && {
-    marginLeft: 250,
-    width: `calc(100% - ${250}px)`,
+    marginLeft: 0,
+    width: `calc(100% - ${0}px)`,
   }),
 }));
 
@@ -74,7 +73,7 @@ export const Topbar = ({
               color:'#000'
             }}
           >
-            Shopco Merchant
+            By Miles Claims Portal
           </div>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
@@ -87,7 +86,7 @@ export const Topbar = ({
             color:'#000'
           }}
         >
-          {user.name}
+          {/* {user.name} */}
         </span>
         <UserMenu {...props} formatting={formatting}/>
       </Toolbar>
@@ -98,8 +97,7 @@ export const Topbar = ({
 const UserMenu = ({
   userProfile = {},
   handleSwitchGroup,
-  handleShowBorder,
-  formatting
+  handleShowBorder
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const group = userProfile?.user?.group
@@ -138,29 +136,12 @@ const UserMenu = ({
           </MenuItem>
         ))}
         <Divider />
-        <LogoutMenuItem />
         <Divider />
-        <MenuItem onClick={handleShowBorder}>
-          <Typography>Highlight Retool</Typography>
-        </MenuItem>
       </Menu>
 
     </div>
   );
 };
 
-const LogoutMenuItem = () => {
-  const { logout } = useAuth0();
-  return (
-    <MenuItem key="auth0-logout">
-      <Button
-        style={{ color: "#000000" }}
-        onClick={() => logout({ returnTo: window.location.origin })}
-      >
-        Log Out
-      </Button>
-    </MenuItem>
-  );
-};
 
 export default Topbar;

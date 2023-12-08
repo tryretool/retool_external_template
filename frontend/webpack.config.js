@@ -15,9 +15,11 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     port: 3001,
+    allowedHosts: ['all'],
+    host: '0.0.0.0',    
     proxy: {
       context: ['/api', '/auth'],
-      target: 'http://localhost:3000'
+      target: 'http://localhost:3002'
     },
     historyApiFallback: true,
   },

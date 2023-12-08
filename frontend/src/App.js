@@ -1,67 +1,139 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Routes, Route, Outlet, useLocation } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import RetoolWrapper from "./components/RetoolWrapper";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 
-import SplashPage from "./pages/SplashPage";
-import { homepage, auth, formattingPreferences} from "../config";
-import QuickLogin from "./pages/QuickLogin";
-
+import { homepage, formattingPreferences, cloudFlare} from "../config";
+import jwt from 'jsonwebtoken'; 
+import jwksClient from 'jwks-rsa';
+import axios from 'axios';
 
 const App = () => {
-  const { 
-    isLoading, 
-    isAuthenticated, 
-    user, 
-    getAccessTokenSilently, 
-  } = useAuth0();
-
-  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [userProfile, setUserProfile] = useState({});
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   const [sidebarList, setSidebarList] = useState([]);
   const [showBorder, setShowBorder] = useState(false);
-  const [seed, setSeed] = useState(1);
   const [font, setFont] = useState('Retool Default')
-  const location = useLocation();
+  const location = useLocation();  
+  const AUD = cloudFlare.testPolicyAud;
+  const TEAM_DOMAIN = cloudFlare.teamDomain;
+  const CERTS_URL = `${TEAM_DOMAIN}/cdn-cgi/access/certs`;
+  const IDENTITY_URL = `${TEAM_DOMAIN}/cdn-cgi/access/get-identity`;
+
+    useEffect(() => {
+      const authenticateUser = async () => {
+        try {
+
+          const token = getCookie('CF_Authorization');
+          //const token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhjYjNiMDNkOTQ1ZGU1YWE4Njc4ZmIxN2M3MDQxODkwMzAzN2Q4MmM0NjBkOWE3ZGNjOTVlNTA3ZDcyMGY1MGQifQ.eyJhdWQiOlsiNDUwYzY1YjBjZmYyYzUwZjg0MjlmOWVlZTE1OTQ5NzEzMDQ4ZGZkY2QzZDE3MGRjNTVjYWI1YjNlZjkyMzhiYSJdLCJlbWFpbCI6Imxsb3lkQGJ5bWlsZXMuY28udWsiLCJleHAiOjE3MDIwNTA4NjAsImlhdCI6MTcwMTk2NDQ2MCwibmJmIjoxNzAxOTY0NDYwLCJpc3MiOiJodHRwczovL2J5bWlsZXMuY2xvdWRmbGFyZWFjY2Vzcy5jb20iLCJ0eXBlIjoiYXBwIiwiaWRlbnRpdHlfbm9uY2UiOiJrOFVMTE9rMlp2RkR3dXEwIiwic3ViIjoiMzA5YWUxOTgtMDY1NS00ZDU4LWFiOWItNDNlMzFmZDU4YWUxIiwiY291bnRyeSI6IkdCIn0.NkCNzKPHKeMm3TOcJ4RBj0WJKEgpbFfE-72IAEoKy0191dOQXCQRXmZywkGhZ9-GYZcKpuFO4SltG-rvYan7L9EzwoghZb2BJI87gF6C2i3vH1xGKVcaBmQIsqbG2T9WpFEY4pQi2ZyW-ftZxZ2ea2q_6s-bxbhAaAgp9Cyjp-TO9eD5nbJ8jXIY13bzhN0l_OkrBSg8RbKBGdmgqfurT1iyXM9HJlRvGZMI4sR7oa2y0dRGySIsIZmBxaE3Dg0OlWhR2Ud2yBuLOljkvY-5yfOMOv7blQKaXWhtbJQ22tYRH2MiZTrm7wm1mDjHgPEKmQmuiHz4_uJWuawO8PNCHQ";
+  
+          if (!token) {
+            console.error('Missing required CF Authorization token');
+            return;
+          } 
+
+          const decodedUser = await verifyToken(token);
+          console.log('Decoded User:', decodedUser);
+
+          // Fetch the full identity from the Cloudflare Access Identity API
+          const fullIdentity = await getFullIdentity(token);
+          console.log('Full Identity:', fullIdentity);
+
+          const { email, groups } = decodedUser;
+
+          setUserProfile({
+            user: {
+              user: email,
+              group: groups,
+            },
+          });
+
+          setAccessToken(token);
+          setIsAuthenticated(true);
+  
+        } catch (error) {
+          console.error('Authentication failed:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      authenticateUser();
+    }, []);
+
+    const getFullIdentity = async (token) => {
+      const apiUrl = IDENTITY_URL;
+    
+      // Set the CF_Authorization cookie in the request headers
+      const headers = {
+        Cookie: `CF_Authorization=${token}`,
+      };
+    
+      // Make a request to the Cloudflare Access Identity API
+      const response = await axios.get(apiUrl, { headers });
+    
+      return response.data;
+    };    
+
+    const getCookie = (name) => {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.trim().split('=');
+        if (cookieName === name) {
+          return cookieValue;
+        }
+      }
+      return null;
+    };
+  
+    const verifyToken = async (token) => {
+      const decodedUser = await verifyTokenWithCloudflare(token);
+      return decodedUser;
+    };
+  
+    const verifyTokenWithCloudflare = async (token) => {
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, getKey, { audience: AUD }, (err, decoded) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(decoded);
+          }
+        });
+      });
+    };
+  
+    const getKey = (header, callback) => {
+      const client = jwksClient({
+        jwksUri: CERTS_URL
+      });
+
+      client.getSigningKey(header.kid, function (err, key) {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, key.getPublicKey());
+        }
+      });
+    };
 
   useEffect(() => {
-    // Run the callback function when the route changes
     setFont('Retool Default');
   }, [location.pathname]);
 
   /**
-   * Updates user metadata on Auth0
-   * @param {string} accessToken - Access Token for Auth0 Management API
-   * @param {Object} update  - Request body; the metadata values to be set
-   */
-  const updateUserMetadata = async (accessToken, update) => {
-    const updateUserDetailsUrl = `https://${auth.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}`;
-    await fetch(updateUserDetailsUrl, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(update),
-    });
-  };
-
-  /**
    * Sets the user's current group, which serves to demonstrate dynamic RBAC-based features
-   * Updates both user metadata on Auth0 & the userProfile state variable
+   * Updates the userProfile state variable
    * @param {string} group - group to set as user's current group
    */
   const handleSwitchGroup = (group) => {
-    updateUserMetadata(accessToken, {
-      user_metadata: { group: group },
-    }).then(setSeed(Math.random()));
-
     setUserProfile({
       ...userProfile,
       ...{
@@ -74,38 +146,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const getUserMetadata = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        setAccessToken(token);
 
-        const userDetailsByIdUrl = `https://${auth.REACT_APP_AUTH0_DOMAIN}/api/v2/users/${user.sub}`;
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const { app_metadata, user_metadata } = await metadataResponse.json();
-        setUserProfile({
-          app: app_metadata,
-          user: user_metadata,
-        });
-
-        updateUserMetadata(token, {
-          user_metadata: {
-            latestLogin: Date.now(),
-          },
-        });
-      } catch (e) {
-        console.warn("getUserMetadata failed:", e);
-      }
-    };
-    if (user?.sub) {
-      getUserMetadata();
-    }
-  }, [user?.sub]);
-
-  useEffect(() => {
     let isAdmin = userProfile?.user?.group === "admin";
     if (isAdmin) {
       setSidebarList(homepage.sidebarList);
@@ -124,8 +165,7 @@ const App = () => {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path="/quicklogin" element={<QuickLogin />} />
-        <Route path="*" element={<SplashPage />} />
+        Access denied
       </Routes>
     );
   }
@@ -133,7 +173,6 @@ const App = () => {
   return (
     <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formattingPreferences.backgroundColor }}>
       <Routes>
-        <Route path="/login" element={<SplashPage />} />
         <Route
           path="/"
           element={
@@ -160,7 +199,7 @@ const App = () => {
                   retoolAppName={item.retoolAppName}
                   accessToken={accessToken}
                   showBorder={showBorder}
-                  key={seed}
+                  key={1}
                   userProfile={userProfile}
                   activeFont={font}
                 />
@@ -172,13 +211,14 @@ const App = () => {
       </Routes>
     </Box>
   );
+
+
 };
 
 const LayoutWrapper = ({ toggleDrawer, ...rest }) => (
   <>
     <CssBaseline />
     <Topbar onToggleDrawer={toggleDrawer} {...rest} />
-    <Sidebar onClick={toggleDrawer} {...rest} />
     <Outlet />
   </>
 );

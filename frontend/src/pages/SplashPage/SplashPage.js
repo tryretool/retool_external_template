@@ -1,5 +1,4 @@
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Button, Box, Paper } from "@mui/material";
 import "./styles.css";
 
@@ -13,13 +12,12 @@ const SplashPage = () => {
     <Paper className="bg">
       <Box className="login-container">
         <img
-          src="https://i.ibb.co/SBfqNbc/imageedit-1-4156875095.png"
+          src="https://www.bymiles.co.uk/wp-content/themes/bymiles%20v27.07.2021-B/src/assets/bymiles-logo.svg"
           width="300px"
         />
-        <h3 className="title"> Merchant portal </h3>
+        <h3 className="title"> Claims portal </h3>
         <p>
-          Log in to manage your restaurants, refund orders, and drive new
-          business.
+          Log in to view By Miles live policy information.
         </p>
         <Button
           className="login"

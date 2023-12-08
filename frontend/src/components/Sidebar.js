@@ -13,13 +13,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormGroup,
 } from "@mui/material";
 
 const Drawer = styled(MuiDrawer, {
@@ -27,7 +20,7 @@ const Drawer = styled(MuiDrawer, {
 })(({ theme, open }) => ({
   "& .MuiDrawer-paper": {
     color: "#ffffff",
-    background: "#080928",
+    background: "#f5f5f5",
     position: "relative",
     whiteSpace: "nowrap",
     width: 250,
@@ -50,51 +43,27 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const FontSelector = ({ font, handleSetFont }) => (
-  <FormControl variant="filled" fullWidth>
-    <InputLabel id="font-select-label" style={{ color: "#080928" }}>
-      Active font
-    </InputLabel>
-    <Select
-      labelId="font-select-label"
-      id="font-select"
-      value={font}
-      onChange={(evt) => handleSetFont(evt.target.value)}
-      style={{ background: "white" }}
-    >
-      <MenuItem value={"Retool Default"}>Retool Default</MenuItem>
-      <MenuItem value={"Arial"}>Arial</MenuItem>
-      <MenuItem value={"Calibri"}>Calibri</MenuItem>
-      <MenuItem value={"Courier New"}>Courier New</MenuItem>
-      <MenuItem value={"Helvetica"}>Helvetica</MenuItem>
-      <MenuItem value={"Times New Roman"}>Times New Roman</MenuItem>
-    </Select>
-  </FormControl>
-);
-
 const Sidebar = ({
   drawerIsOpen = true,
   sidebarList,
   onClick,
-  activeFont,
-  handleSetFont,
 }) => {
   return (
     <Drawer variant="permanent" open={drawerIsOpen}>
       <Box display="flex" justifyContent="space-between" marginTop="24px">
         <Box display="flex">
           <img
-            src="https://i.ibb.co/b2k0Ss0/Screen-Shot-2021-09-10-at-5-29-42-PM-removebg-preview.png"
+            src="https://theme.zdassets.com/theme_assets/2394985/82fdd1430ffe8b0d165164cb129affbf5e918726.svg"
             width="100%"
           />
         </Box>
         <Box alignSelf="flex-end">
-          <IconButton style={{ color: "#ffffff" }} onClick={onClick}>
+          <IconButton style={{ color: "#000000" }} onClick={onClick}>
             <ChevronLeftIcon />
           </IconButton>
         </Box>
       </Box>
-      <Box sx={{ overflow: "auto", color: "#ffffff" }} marginTop="40">
+      <Box sx={{ overflow: "auto", color: "#000000" }} marginTop="40">
         <List disablePadding={true}>
           {sidebarList.map((item) => (
             <React.Fragment key={item.slug}>
@@ -109,8 +78,8 @@ const Sidebar = ({
                     left: 2.5,
                   }}
                 >
-                  <ListItemIcon style={{ color: "#ffffff" }}>
-                    <Icon color="#ffffff">{item.icon}</Icon>
+                  <ListItemIcon style={{ color: "#000000" }}>
+                    <Icon color="#000000">{item.icon}</Icon>
                   </ListItemIcon>
                   <ListItemText
                     primary={item.title}
@@ -125,11 +94,7 @@ const Sidebar = ({
         </List>
         <Divider />
       </Box>
-      <Box position={"fixed"} bottom={"15"} width={"220"} marginLeft={"15"}>
-        {drawerIsOpen && (
-          <FontSelector font={activeFont} handleSetFont={handleSetFont} />
-        )}
-      </Box>
+      
     </Drawer>
   );
 };

@@ -1,0 +1,171 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Pipeline for bymiles-dlg-claims-portal
+Parameters:
+  Service:
+    Description: Name of the service, propagated all over the place. Choose wisely.
+    Type: String
+    Default: dlg-claims-portal
+Resources:
+  GitHubWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAUTH_TOKEN}}'
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: refs/heads/{Branch}
+      RegisterWithThirdParty: true
+      TargetPipeline: !Ref CodePipeline
+      TargetAction: Source
+      TargetPipelineVersion: !GetAtt CodePipeline.Version
+  CodeBuildBranch:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Name: !Sub "bymiles-${Service}-branch"
+      Description: !Sub "bymiles-${Service} testing"
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        EnvironmentVariables:
+          - Name: S3Prefix
+            Value: !Sub "bymiles-${Service}"
+            Type: PLAINTEXT
+          - Name: KMSKey
+            Value: 6077ca1f-47f1-4ed6-8e03-a59e9c9209bd
+            Type: PLAINTEXT
+          - Name: BUILD
+            Value: false
+        Image: aws/codebuild/standard:7.0
+        Type: LINUX_CONTAINER
+        PrivilegedMode: true
+      ServiceRole: arn:aws:iam::608560900974:role/service-role/bymiles-ops-codebuild-role
+      Source:
+        Type: GITHUB
+        Location: https://github.com/by-miles/bymiles-dlg-claims-portal.git
+        BuildSpec: infrastructure/buildspec.yaml
+        ReportBuildStatus: true
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          -   - Type: EVENT
+                Pattern: PUSH
+              - Type: HEAD_REF
+                Pattern: ^refs/heads/main$
+                ExcludeMatchedPattern: true
+      TimeoutInMinutes: 15
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Name: !Sub "bymiles-${Service}"
+      Description: !Sub "${Service} testing and docker image build and published to\
+        \ ECR"
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        EnvironmentVariables:
+          - Name: S3Prefix
+            Value: !Sub "bymiles-${Service}"
+            Type: PLAINTEXT
+          - Name: REPOSITORY_URI
+            Value: 608560900974.dkr.ecr.eu-west-2.amazonaws.com/bymiles-claims-portal
+            Type: PLAINTEXT
+          - Name: KMSKey
+            Value: 6077ca1f-47f1-4ed6-8e03-a59e9c9209bd
+            Type: PLAINTEXT
+          - Name: BUILD
+            Value: true
+        Image: aws/codebuild/standard:5.0
+        Type: LINUX_CONTAINER
+        PrivilegedMode: true
+      ServiceRole: arn:aws:iam::608560900974:role/service-role/bymiles-ops-codebuild-role
+      EncryptionKey: arn:aws:kms:eu-west-2:608560900974:key/6077ca1f-47f1-4ed6-8e03-a59e9c9209bd
+      Source:
+        BuildSpec: infrastructure/buildspec.yaml
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 15
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: bymiles-ops-codepipeline-artefacts
+        Type: S3
+        EncryptionKey:
+          Id: arn:aws:kms:eu-west-2:608560900974:key/6077ca1f-47f1-4ed6-8e03-a59e9c9209bd
+          Type: KMS
+      Name: !Sub "bymiles-${Service}"
+      RestartExecutionOnUpdate: true
+      RoleArn: arn:aws:iam::608560900974:role/service-role/bymiles-ops-codepipeline-role
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              Configuration:
+                Repo: bymiles-dlg-claims-portal
+                Owner: by-miles
+                Branch: main
+                OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAUTH_TOKEN}}'
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceOutput
+        - Name: UpdatePipeline
+          Actions:
+            - Name: PipelineStack
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_IAM
+                RoleArn: arn:aws:iam::608560900974:role/cloudformation-deployer-role
+                StackName: !Ref AWS::StackName
+                TemplatePath: SourceOutput::infrastructure/pipeline.yaml
+              InputArtifacts:
+                - Name: SourceOutput
+        - Name: Build
+          Actions:
+            - Name: Image
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: DefinitionArtifact
+                - Name: ImageArtifact
+        - Name: Acceptance
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CodeDeployToECS
+                Version: 1
+              RunOrder: 1
+              RoleArn: arn:aws:iam::026732480320:role/codedeploy-assume-role
+              Configuration:
+                AppSpecTemplateArtifact: DefinitionArtifact
+                AppSpecTemplatePath: appspec.yaml
+                TaskDefinitionTemplateArtifact: DefinitionArtifact
+                TaskDefinitionTemplatePath: taskdef_test.json
+                ApplicationName: dlg-claims-portal
+                DeploymentGroupName: dlg-claims-portal-0024
+                Image1ArtifactName: ImageArtifact
+                Image1ContainerName: IMAGE1_NAME
+              InputArtifacts:
+                - Name: DefinitionArtifact
+                - Name: ImageArtifact
