@@ -6,7 +6,6 @@ import RetoolWrapper from "./components/RetoolWrapper";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 
-import SplashPage from "./pages/SplashPage";
 import { homepage, formattingPreferences} from "../config";
 import jwt from 'jsonwebtoken'; 
 
@@ -143,7 +142,7 @@ const App = () => {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path="*" element={<SplashPage />} />
+        Access denied
       </Routes>
     );
   }
@@ -151,7 +150,6 @@ const App = () => {
   return (
     <Box sx={{ width: "100%", height: "100vh", display: "flex", flexGrow: 1, backgroundColor: formattingPreferences.backgroundColor }}>
       <Routes>
-        <Route path="/login" element={<SplashPage />} />
         <Route
           path="/"
           element={
