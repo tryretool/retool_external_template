@@ -6,8 +6,10 @@ import RetoolWrapper from "./components/RetoolWrapper";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box } from "@mui/material";
 
-import { homepage, formattingPreferences} from "../config";
+import { homepage, formattingPreferences, cloudFlare} from "../config";
 import jwt from 'jsonwebtoken'; 
+import jwksClient from 'jwks-rsa';
+import axios from 'axios';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,29 +22,36 @@ const App = () => {
   const [showBorder, setShowBorder] = useState(false);
   const [font, setFont] = useState('Retool Default')
   const location = useLocation();  
-  const AUD = process.env.POLICY_AUD;
-  const TEAM_DOMAIN = process.env.TEAM_DOMAIN;
+  const AUD = cloudFlare.testPolicyAud;
+  const TEAM_DOMAIN = cloudFlare.teamDomain;
   const CERTS_URL = `${TEAM_DOMAIN}/cdn-cgi/access/certs`;
+  const IDENTITY_URL = `${TEAM_DOMAIN}/cdn-cgi/access/get-identity`;
 
     useEffect(() => {
       const authenticateUser = async () => {
         try {
+
           const token = getCookie('CF_Authorization');
+          //const token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhjYjNiMDNkOTQ1ZGU1YWE4Njc4ZmIxN2M3MDQxODkwMzAzN2Q4MmM0NjBkOWE3ZGNjOTVlNTA3ZDcyMGY1MGQifQ.eyJhdWQiOlsiNDUwYzY1YjBjZmYyYzUwZjg0MjlmOWVlZTE1OTQ5NzEzMDQ4ZGZkY2QzZDE3MGRjNTVjYWI1YjNlZjkyMzhiYSJdLCJlbWFpbCI6Imxsb3lkQGJ5bWlsZXMuY28udWsiLCJleHAiOjE3MDIwNTA4NjAsImlhdCI6MTcwMTk2NDQ2MCwibmJmIjoxNzAxOTY0NDYwLCJpc3MiOiJodHRwczovL2J5bWlsZXMuY2xvdWRmbGFyZWFjY2Vzcy5jb20iLCJ0eXBlIjoiYXBwIiwiaWRlbnRpdHlfbm9uY2UiOiJrOFVMTE9rMlp2RkR3dXEwIiwic3ViIjoiMzA5YWUxOTgtMDY1NS00ZDU4LWFiOWItNDNlMzFmZDU4YWUxIiwiY291bnRyeSI6IkdCIn0.NkCNzKPHKeMm3TOcJ4RBj0WJKEgpbFfE-72IAEoKy0191dOQXCQRXmZywkGhZ9-GYZcKpuFO4SltG-rvYan7L9EzwoghZb2BJI87gF6C2i3vH1xGKVcaBmQIsqbG2T9WpFEY4pQi2ZyW-ftZxZ2ea2q_6s-bxbhAaAgp9Cyjp-TO9eD5nbJ8jXIY13bzhN0l_OkrBSg8RbKBGdmgqfurT1iyXM9HJlRvGZMI4sR7oa2y0dRGySIsIZmBxaE3Dg0OlWhR2Ud2yBuLOljkvY-5yfOMOv7blQKaXWhtbJQ22tYRH2MiZTrm7wm1mDjHgPEKmQmuiHz4_uJWuawO8PNCHQ";
   
           if (!token) {
             console.error('Missing required CF Authorization token');
             return;
-          }
-  
+          } 
+
           const decodedUser = await verifyToken(token);
           console.log('Decoded User:', decodedUser);
 
-          const { user, group } = decodedUser;
+          // Fetch the full identity from the Cloudflare Access Identity API
+          const fullIdentity = await getFullIdentity(token);
+          console.log('Full Identity:', fullIdentity);
+
+          const { email, groups } = decodedUser;
 
           setUserProfile({
             user: {
-              user: user,
-              group: group,
+              user: email,
+              group: groups,
             },
           });
 
@@ -58,7 +67,21 @@ const App = () => {
   
       authenticateUser();
     }, []);
-  
+
+    const getFullIdentity = async (token) => {
+      const apiUrl = IDENTITY_URL;
+    
+      // Set the CF_Authorization cookie in the request headers
+      const headers = {
+        Cookie: `CF_Authorization=${token}`,
+      };
+    
+      // Make a request to the Cloudflare Access Identity API
+      const response = await axios.get(apiUrl, { headers });
+    
+      return response.data;
+    };    
+
     const getCookie = (name) => {
       const cookies = document.cookie.split(';');
       for (const cookie of cookies) {

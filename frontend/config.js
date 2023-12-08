@@ -1,5 +1,11 @@
 exports.deployOnLocalhost = false;
 
+exports.cloudFlare = {
+  testPolicyAud: "450c65b0cff2c50f8429f9eee15949713048dfdcd3d170dc55cab5b3ef9238ba",
+  prodPolicyAud: "f4a2fd663c0766bcf31963fc7819f64c2439aa76f99acbb02d67f17f8f6bd635",
+  teamDomain: "https://bymiles.cloudflareaccess.com",
+}
+
 exports.homepage = {
   sidebarList: [
     {
