@@ -71,14 +71,13 @@ Mono-repo. Single project, but each of frontend and backend can be run separatel
 
 ```
 └── backend/
+    ├── retoolIdMaps.js        // defines mappings to converting Retool app names to UUIDs and IDP group metadata to Retool Group IDs
     ├── public/                // directory for serving static files
     │   └── index.html         // HTML file for the server's default page
-    ├── routes/                 // directory containing route handlers
-    │   ├── index.js            // entry point for the routes directory
-    │   ├── retool.js           // route handler for the /api/embedUrl endpoint. Makes a request to Retool to get the embed URL.
-    ├── utils/                 // directory for utility functions
-    │   └── retoolAppsToUuids.js // utility function for converting Retool app names to UUIDs
-    ├── server.js               // entry point for the server. Specifies the router files to use (index.js, retool.js)
+    ├── routes/                // directory containing route handlers
+    │   ├── index.js           // entry point for the routes directory
+    │   ├── retool.js          // route handler for the /api/embedUrl endpoint. Makes a request to Retool to get the embed URL.
+    ├── server.js              // entry point for the server. Specifies the router files to use (index.js, retool.js)
     ├── package.json           // file for managing dependencies
 ```
 
