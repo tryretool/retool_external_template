@@ -19,6 +19,10 @@ You can learn more about [how Retool Embed works here.](https://docs.retool.com/
 
 ## 💻 Requirements
 
+### Retool custom domain
+If you are self-hosting Retool, you are already using a custom domain. [If you are using Retool Cloud, set up a custom domain by following these instructions](https://docs.retool.com/org-users/guides/cloud/custom-domains). Learn more about domain requirements related to embedding apps [here](https://docs.retool.com/apps/guides/app-management/embed-apps#use-the-same-domain).
+
+### Node
 This template requires Node.js version 16.14.2 or higher. Please make sure that you have Node.js installed before running the application. You can download Node.js from the official website: https://nodejs.org/
 
 If you have a different version of Node.js installed on your machine, you can use a version manager like [NVM](https://github.com/nvm-sh/nvm#installing-and-updating) to switch between different versions. 
@@ -31,13 +35,19 @@ $ `node -v`
 
 ## 🚀 Getting Started
 
+### Auth0 setup
+1. Create a new Auth0 Single Page Application using [Auth0's React guide](https://auth0.com/docs/quickstart/spa/react).
+2. This example expects users to have a `user_metadata` attribute called `group` containing the string of a single group such as `"gold"`. This is important to set up consistently with the values you provide in the following steps for `frontend/config.js` and `backend/retoolIdMaps.js`.
+
+### Repo setup
 1. Clone repo
 2. Setup the Frontend
     - Run `cp frontend/config-example.js frontend/config.js` 
-    - Update `frontend/config.js` with your Auth0 credentials (Domain and ClientID). See [this guide](https://auth0.com/docs/quickstart/spa/react#configure-auth0).
+    - Update `frontend/config.js` with your Auth0 credentials (Domain and ClientID). See [this guide](https://auth0.com/docs/quickstart/spa/react#configure-auth0). Update the sideBarList array (additional instructions can be found in the comments).
 3. Setup the Backend
     - Run `cp backend/.env.example backend/.env` 
     - Update `backend/.env` file to configure your RETOOL_API_KEY and RETOOL_URL.
+    - Update `backend/retoolIdMaps.js` with values according to the comments. No `0`'s should remain.
 4. Run `yarn install`
 5. Run `./start`
 6. Open `http:\\localhost:3001` in browser

@@ -10,6 +10,10 @@ exports.auth = {
 };
 
 exports.homepage = {
+  // List of apps to show on the side bar navigation pane.
+  // Be sure to map each `retoolAppName` to the corresponding Retool app UUID in the backend/retoolIdMaps.js file.
+  // The `groups` array should match the Auth0 user_metadata.group values you have set up in Auth0.
+  // Users will only see apps when their group (string) is in the sideBarList item's groups array.
   sidebarList: [
     {
       title: "Store manager",
