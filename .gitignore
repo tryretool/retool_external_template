@@ -7,3 +7,4 @@ yarn-error.log
 *bundle.js
 token_examples/raw/
 package-lock.json
+.vscode/
