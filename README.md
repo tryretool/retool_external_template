@@ -71,7 +71,7 @@ Mono-repo. Single project, but each of frontend and backend can be run separatel
 
 ```
 └── backend/
-    ├── retoolIdMaps.js        // defines mappings to converting Retool app names to UUIDs and IDP group metadata to Retool Group IDs
+    ├── retoolIdMaps.js        // defines mappings to converting Retool app names to UUIDs and IDP user_metadata.group to Retool Group IDs
     ├── public/                // directory for serving static files
     │   └── index.html         // HTML file for the server's default page
     ├── routes/                // directory containing route handlers
