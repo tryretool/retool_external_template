@@ -19,7 +19,7 @@ const RetoolWrapper = ({
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ retoolAppName, accessToken, userProfile })
+      body: JSON.stringify({ retoolAppName, accessToken })
     };
     fetch('/api/embedUrl', options)
     .then(res => res.json())
