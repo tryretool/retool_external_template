@@ -1,7 +1,6 @@
 exports.deployOnLocalhost = true;
 
 // To get your Auth0 Domain, and ClientID, see this guide https://auth0.com/docs/quickstart/spa/react#configure-auth0
-
 exports.auth = {
   tokenDuration: "1800s",
   REACT_APP_AUTH0_DOMAIN: "YOUR_AUTH0_DOMAIN",
