@@ -1,4 +1,5 @@
 // Define mappings for frontend/config.js's  retoolAppName values to Retool app UUIDs
+// You can find the UUID of a Retool app by editing the app in Retool and copying the UUID from the URL
 const retoolAppMap = {
    storeManager: "966bf7fc-9057-11ed-bb00-b78554d89588",
    orderHistory: "56a70878-5e43-11ed-b603-5f3bd9271091",
