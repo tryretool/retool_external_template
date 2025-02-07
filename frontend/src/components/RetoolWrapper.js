@@ -25,6 +25,7 @@ const RetoolWrapper = ({
     .then(res => res.json())
     .then(data => { 
       if(data.embedUrl){
+        setRetoolEmbedError(false)
         setRetoolEmbedUrl(data.embedUrl)
       } else {
         console.error('An error occurred when requesting a Retool embed URL:', {data})
