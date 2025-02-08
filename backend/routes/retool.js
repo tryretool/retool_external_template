@@ -9,31 +9,41 @@ var express = require('express');
 var router = express.Router();
 
 // Import the Retool app map utility function.
-var retoolAppMap = require('../utils/retoolAppsToUuids')
+var { retoolAppMap, fallbackRetoolGroupId, idpGroupToRetoolGroupMap } = require('../retoolIdMaps')
 
 // Define a route for retrieving an embedded Retool URL.
-router.post('/embedUrl', (req, res) => {
+router.post('/embedUrl', async (req, res) => {
+
   // Parse the JWT access token.
   const parsedToken = JSON.parse(atob(req.body.accessToken.split('.')[1]))
 
-  // Get the user group from the request.
-  const group = req.body.userProfile.user.group
+  // Get user info from issuer API
+  const userInfoRequestUrl = `${parsedToken.iss}api/v2/users/${parsedToken.sub}`
+  const userInfoRequest = await fetch(userInfoRequestUrl, {
+    headers: {
+      Authorization: `Bearer ${req.body.accessToken}`,
+    }
+  })
+  const userInfoResponse = await userInfoRequest.json()
 
-  // Set the API request options for the Retool API.
+  // Determine which Retool group ID to pass to the Retool Embed API
+  const retoolGroupId = idpGroupToRetoolGroupMap[userInfoResponse?.user_metadata?.group] ?? fallbackRetoolGroupId
+
+  // Set the API request options for the Retool API Embed API
   const options = {
     method: "post",
     headers: {
       'Authorization': `Bearer ${process.env.RETOOL_API_KEY}`,
       'content-type': 'application/json',
     },
-    body: JSON.stringify({
-      "landingPageUuid": retoolAppMap[req.body.retoolAppName],
-      "externalIdentifier": parsedToken.azp,
-      "groupIds": [1],
-      "metadata": {
-        "group": group,
-        "mode" : 'dark'
-      }
+    body: JSON.stringify({ // See https://docs.retool.com/apps/guides/app-management/embed-apps#3-create-an-embed-url for all attributes
+      "landingPageUuid": retoolAppMap[req.body.retoolAppName], // The UUID of the Retool app you want to embed
+      "externalIdentifier": parsedToken.sub, // External identifier for the user in Retool
+      "groupIds": [retoolGroupId], // List of Retool group IDs to add this user to. Be sure they have access to the app you're embedding.
+      "userInfo": { // (optional) Retool user info, can include email, firstName, and/or lastName
+        "email": userInfoResponse.email
+      },
+      "metadata": userInfoResponse.user_metadata // (optional) Auth0 user_metadata passed into Retool user metadata/attributes
     })
   }
 

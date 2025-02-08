@@ -12,23 +12,44 @@ const RetoolWrapper = ({
 }) => { 
 
   const [retoolEmbedUrl, setRetoolEmbedUrl] = useState('')
+  const [retoolEmbedError, setRetoolEmbedError] = useState(false)
 
   useEffect(() => {
     // make a POST request to the backend to get the embed URL
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ retoolAppName, accessToken, userProfile })
+      body: JSON.stringify({ retoolAppName, accessToken })
     };
     fetch('/api/embedUrl', options)
     .then(res => res.json())
-    .then(data => { setRetoolEmbedUrl(data.embedUrl)})
+    .then(data => { 
+      if(data.embedUrl){
+        setRetoolEmbedError(false)
+        setRetoolEmbedUrl(data.embedUrl)
+      } else {
+        console.error('An error occurred when requesting a Retool embed URL:', {data})
+        setRetoolEmbedError(true)
+      }
+    })
   }, [retoolAppName])
   
-  // if embed URL is available, return the Container and Retool components
-  return retoolEmbedUrl && (
-    <Container maxWidth={false} disableGutters style={{ marginTop: 66, border:  showBorder ? '5px dashed #FFD4D2' : 'none', boxShadow: "none"}}>
-        <Retool url={retoolEmbedUrl} data={{darkMode, font: activeFont}} />
+  return (
+    <Container
+      maxWidth={false}
+      disableGutters
+      style={{
+        marginTop: 66,
+        border: showBorder ? '5px dashed #FFD4D2' : 'none',
+        boxShadow: "none"
+      }}
+    >
+      {retoolEmbedError && (
+        <div style={{ color: 'red', padding: '1rem' }}>An error occurred while trying to retrieve your embed URL.</div>
+      )}
+      {retoolEmbedUrl && (
+        <Retool url={retoolEmbedUrl} data={{ darkMode, font: activeFont }} />
+      )}
     </Container>
   )
 }
